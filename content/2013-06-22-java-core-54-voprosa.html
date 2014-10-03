@@ -1,0 +1,743 @@
+<html>
+<head>
+  <title>Java core. 54 вопроса</title>
+  <meta name="tags" content="java" />
+  <meta name="date" content="2013-06-22 16:58" />
+  <meta name="modified" content="2013-06-22 16:58" />
+  <meta name="category" content="java" />
+  <meta name="authors" content="Alykoff" />
+  <meta name="summary" content="Вопросы с моими ответами на тему java core." />
+  <meta name="rawcss" content="
+    .answer {
+      border-left: 1px dashed rgb(173, 162, 162);
+      padding: 0 0 10px 20px;
+      margin: 10px 0 20px 0;
+    }
+
+    .answer:hover {
+      background: rgba(0, 0, 0, 0.02);
+    }
+
+    .question {
+      padding: 10px;
+    }" />
+</head>
+<body>
+  <p>54 вопроса на знание java core. Как-то мне пришлось на эти вопросы ответить. Надеюсь я нигде не налажал )</p>
+  <ol>
+    <li>
+      <div class="question">
+        Что такое класс <code>Object</code>? Какие в нем есть методы?
+      </div>
+      <div class="answer">
+        Класс <code>Object</code> - это базовый класс. Для каждого класса <code>Object</code> - супер класс. Все
+        объекты, включая массивы имплементируют методы этого класса. В нем присутствуют методы:
+        <ul>
+          <li>
+            <code>boolean equals(Object o)</code>
+          </li>
+          <li>
+            <code>void finalize()</code> // вызывается сборщиком мусора, когда gc определил, что ссылок на объект больше
+            нет.
+          </li>
+          <li>
+            <code>Class&lt;?&gt; getClass()</code> //возвращает в рантайме класс данного объекта.
+          </li>
+          <li>
+            <code>int hashCode()</code>
+          </li>
+          <li>
+            <code>void notify()</code> // просыпается одни поток, который ждет на "мониторе" данного объекта.
+          </li>
+          <li>
+            <code>void notifyAll()</code> // просыпаются все потоки, которые ждут на "мониторе" данного объекта.
+          </li>
+          <li>
+            <code>String toString()</code>
+          </li>
+          <li>
+            <code>void wait()</code> // Приводит данный поток в ожидание, пока другой поток не вызовит <code>notify()</code>
+            или <code>notifyAll()</code> методы для этого объекта.
+          </li>
+          <li>
+            <code>void wait(long timeout)</code> // Приводит данный поток в ожидание, пока другой поток не вызовет <code>notify()</code>
+            или <code>notifyAll()</code> для этого метода, или пока не исчет указанный промежуток времени.
+          </li>
+          <li>
+            <code>void wait(long timeout, int nanos)</code> // nanos - дополнительное время в наносекундах.
+          </li>
+          <li>
+            <code>Object clone()</code> // create and returns a copy of this object.
+          </li>
+        </ul>
+      </div>
+    </li>
+    <li>
+      <div class="question">
+        Что такое метод <code>equals</code>. Чем он отличается от операции <code>==</code>.
+      </div>
+      <div class="answer">
+        Метод, определенный в <code>Object</code>, который служит для сравнение объектов на равенство. При сравнение
+        объектов при помощи <code>==</code> идет сравнение по ссылкам. При сравнении по equals идет сравнение по
+        состояниям объектов (реализация метода equals для нового созданного класса ложится на плечи разработчиков).
+        <ul>
+          <li>Причем равенство должно работать в обе стороны.</li>
+          <li>Должно выполняться условие транзитивности.</li>
+          <li>Для одних и тех же экземпляров результат работы метода должен быть всегда одинаков.</li>
+        </ul>
+      </div>
+    </li>
+    <li>
+      <div class="question">
+        Если вы хотите переопределить <code>equals</code>, какие условия должны удовлетворяться для переопределенного
+        метода?
+      </div>
+      <div class="answer">
+        <code>См. 2)</code>. Так же должно выполняться условие, что возвращаемое значение работы метода <code>hashCode()</code>
+        для объектов равных относительно метода <code>equals()</code> должен быть одинаковым.
+      </div>
+    </li>
+    <li>
+      <div class="question">
+        Если <code>equals</code> переопределен, есть ли какие-либо другие методы, которые следует переопределить?
+      </div>
+      <div class="answer">
+        Да, есть. <code>hashCode()</code>. Для того, чтобы поддержать общий контракт.
+      </div>
+    </li>
+    <li>
+      <div class="question">
+        Для чего нужен метод <code>hashCode</code>?
+      </div>
+      <div class="answer">
+        Этот метод используется для хэш таблиц, таких как <code>HashMap</code>. Контракт:
+        <ul>
+          <li>
+            Когда метод <code>hashCode()</code> последовательно вызывают на одном и том же объекте, метод должен
+            возвращать в этом случае одни и теже значения, при условии, что никакая информация, которая используется в <code>equals()</code>
+            при сравнении не изменилась. Возвращаемый хэш код может быть различным в различных запущенных приложениях.
+          </li>
+          <li>
+            Два объекта равные по <code>equals()</code> должны возвращать одинаковый <code>hashCode()</code>.
+          </li>
+          <li>
+            Не обязательно, что объекты не равные по <code>equals()</code> должны возвращать разные <code>hashCode()</code>.
+          </li>
+        </ul>
+      </div>
+    </li>
+    <li>
+      <div class="question">
+        Какая связь между <code>hashCode</code> и <code>equals</code>?
+      </div>
+      <div class="answer">
+        <code>См 5)</code>
+      </div>
+    </li>
+    <li>
+      <div class="question">
+        Каким образом реализованы методы <code>hashCode</code> и <code>equals</code> в классе <code>Object</code>?
+      </div>
+      <div class="answer">
+        В классе <code>Object</code> метод equals производит сравнение по ссылке, метод <code>hashCode()</code>
+        генерироет hash при помощи нативного кода из адреса ссылки.
+      </div>
+    </li>
+    <li>
+      <div class="question">
+        Что будет, если переопределить <code>equals</code> не переопределяя <code>hashCode</code>? Какие могут
+        возникнуть проблемы?
+      </div>
+      <div class="answer">
+        Нарушится контракт. Классы и методы, которые использовали правила этого контракта могут некореектно работать.
+        Так в для объекта <code>HashMap</code> это может привести к тому, что пара, которая была помещена в мапу
+        возможно не будет найдена в ней при обращении к мапе, если использует новый экземпляр ключа.
+      </div>
+    </li>
+    <li>
+      <div class="question">
+        Есть ли какие-либо рекомендации о том, какие поля следует использовать при подсчете <code>hashCode</code>?
+      </div>
+      <div class="answer">
+        Те, которые используют при определении метода <code>equals()</code>. Хэш код должен быть равномерно распределен
+        на области возможных принимаемых значений.
+      </div>
+    </li>
+    <li>
+      <div class="question">Как вы думаете, будут ли какие-то проблемы, если у объекта, который используется в
+        качестве ключа в hashMap изменится поле, которое участвует в определении hashCode?</div>
+      <div class="answer">Будут. При обращении по ключу, мы может не найти значение.</div>
+    </li>
+    <li>
+      <div class="question">
+        Какие модификаторы доступа в <code>Java</code> вы знаете?
+      </div>
+      <div class="answer">
+        <ul>
+          <li>
+            <code>private</code>,
+          </li>
+          <li>
+            <code>protected</code>,
+          </li>
+          <li>
+            <code>package-private (default)</code>,
+          </li>
+          <li>
+            <code>public</code>.
+          </li>
+        </ul>
+      </div>
+    </li>
+    <li>
+      <div class="question">
+        Какой из модификаторов более строгий: <code>protected</code> или <code>package-private</code>?
+      </div>
+      <div class="answer">
+        <code>package-private</code>. Поле с <code>package-private</code> уровнем доступа будет видно только в данном
+        пакете всем классам.Тогда как protected видно для наследников данного класса, а так же для классов находящихся в
+        данном пакете.
+      </div>
+    </li>
+    <li>
+      <div class="question">
+        Если у класса-родителя есть метод, объявленный как <code>private</code>, может ли наследник расширить его
+        видимость? А если <code>protected</code>? А сузить видимость?
+      </div>
+      <div class="answer">
+        Действует общий принцип: расширять видимость можно, сужать нельзя. <code>Private</code> методы видны только
+        внутри класса, для потомков они не видны. Поэтому их и расширить нельзя.
+      </div>
+    </li>
+    <li>
+      <div class="question">
+        Что означает ключевое слово <code>final</code>?
+      </div>
+      <div class="answer">
+        Может быть применено к полям, методам или классам. В зависимости к какой сущности приложено данное ключевое
+        слово - будет и различный смысл в его применении.
+        <ul>
+          <li>
+            Для класса. Класс помеченный при помощи <code>final</code> не может иметь наследников.
+          </li>
+          <li>
+            Для метода. Метод помеченный при помощи <code>final</code> не может быть переопределен в классах
+            наследниках.
+          </li>
+          <li>
+            Для поля. Поле помеченное при помощи слова <code>final</code> не может изменить свое значение после
+            инициализации (инициализируется либо при описании, либо в конструкторе/статическом блоке).
+          </li>
+          <li>
+            Значение локальных переменных, а так же параметров метода помеченных при помощи слова <code>final</code> не
+            могут быть изменены после присвоения.
+          </li>
+        </ul>
+      </div>
+    </li>
+    <li>
+      <div class="question">
+        Имеет ли смысл объявлять метод <code>private</code> <code>final</code>?
+      </div>
+      <div class="answer">Нет, такой метод не виден для наследников, а значит не может быть ими переопределен.</div>
+    </li>
+    <li>
+      <div class="question">
+        Какие особенности инициализации <code>final</code> переменных?
+      </div>
+      <div class="answer">
+        <code>см 14)</code>
+      </div>
+    </li>
+    <li>
+      <div class="question">
+        Что будет, если единственный конструктор класса объявлен как <code>final</code>?
+      </div>
+      <div class="answer">
+        К конструктору не применимо ключевое слово <code>final</code>.
+      </div>
+    </li>
+    <li>
+      <div class="question">
+        Что означает ключевое поле <code>static</code>?
+      </div>
+      <div class="answer">
+        То, что метод, внутренний класс или поле является экземплярами класса. Так же существует <code>static
+          блок</code>, который выполняется при загрузке класса.
+        <br />
+        И немного про <code>static-блоки</code>, <code>init-блоки</code> и <code>конструкторы</code> и как они
+        вызываются учитывая иерархию:
+        <ul>
+          <li>
+            <code>static-блок</code> вызывается при загрузке класса, поэтому <code>static-блок</code> super-класса будет
+            вызван раньше, чем <code>static-блок</code> наследника.
+          </li>
+          <li>
+            Вызов других конструкций следующий (при создании экземпляра): <code>init-блок</code> super-класса,
+            конструктор super-класса, <code>init-блок</code> наследника, конструктор наследника. Т.к. <code>init-блок</code>
+            всегда выполняется перед конструктором, а перед вызовом контруктора наследника всегда вызывается конструктор
+            super-класса.
+          </li>
+          <li>
+            <code>init</code>/<code>static</code> блоки в рамках одного класса вызываются в последовательности
+            определения.
+          </li>
+        </ul>
+      </div>
+    </li>
+    <li>
+      <div class="question">
+        К каким конструкциям Java применим модификатор <code>static</code>?
+      </div>
+      <div class="answer">
+        <ul>
+          <li>К методу.</li>
+          <li>К внутреннему классу.</li>
+          <li>К полю.</li>
+          <li>К импортируемы классам (с 5-ой java).</li>
+        </ul>
+      </div>
+    </li>
+    <li>
+      <div class="question">
+        Что будет, если в <code>static блоке</code> кода возникнет исключительная ситуация?
+      </div>
+      <div class="answer">
+        Если в явном виде написать любое исключение в <code>static-блоке</code>, то компилятор не скомпилирует
+        исходники. Это все от того, что компилятор умный. В остальном, взаимодействие с исключениями такое же как и в
+        любом другом месте. Если unchecked исключение вывалится в <code>static-блоке</code>, то класс не будет
+        инициализирован.
+        <br />
+        Какой эксепшн вываливается наружу при ошибке в инит/статик блоке? Для <code>static</code>:
+        <ul>
+          <li>
+            <code>java.lang.ExceptionInInitializerError</code> - если исключение наследуется от <code>RuntimeException</code>.
+          </li>
+        </ul>
+        Для init:
+        <ul>
+          <li>
+            <code>exception</code>, который и вызвал исключение, если он наследуется от <code>RuntimeException</code>.
+          </li>
+        </ul>
+        Верно для <code>static</code> и <code>init</code>:
+        <ul>
+          <li>
+            <code>java.lang.Error</code> - если исключение вызвано <code>Error</code>.
+          </li>
+          <li>
+            <code>java.lang.ThreadDeath</code> - смерть потока. Ничего не вываливается.
+          </li>
+        </ul>
+      </div>
+    </li>
+    <li>
+      <div class="question">
+        Можно ли перегрузить <code>static метод</code>?
+      </div>
+      <div class="answer">Перезагрузить можно, переописать нельзя.</div>
+    </li>
+    <li>
+      <div class="question">Что такое статический класс, какие особенности его использования?</div>
+      <div class="answer">Это вложенный класс, который может обращаться только к статическим полям обертывающего
+        его класса, в том числе и приватным. Доступ к нестатическим полям обрамляющего класса может быть осуществлен
+        только через ссылку на экземпляр обрамляющего объекта.</div>
+    </li>
+    <li>
+      <div class="question">
+        Какие особенности инициализации <code>final</code> <code>static</code> переменных?
+      </div>
+      <div class="answer">
+        Переменный должны быть инициализированы во время объявления или в <code>static блоке</code>.
+      </div>
+    </li>
+    <li>
+      <div class="question">Какие типы классов бывают в java (вложенные… и.т.д.)</div>
+      <div class="answer">
+        <ul>
+          <li>
+            Обычные классы (<code>Top level classes</code>)
+          </li>
+          <li>
+            Интерфейсы (<code>Interfaces</code>)
+          </li>
+          <li>
+            Перечисления (<code>Enum</code>)
+          </li>
+          <li>
+            Статические вложенные классы (<code>Static nested classes</code>)
+            <ul>
+              <li>Есть возможность обращения к внутренним статическим полям и методам класса обертки.</li>
+              <li>Внутренние статические интерфейсы могут содерать только статические мотоды.</li>
+            </ul>
+          </li>
+          <li>
+            Внутренние классы-члены (<code>Member inner classes</code>)
+            <ul>
+              <li>Есть возможность обращения к внутренним полям и методам класса обертки.</li>
+              <li>Не может иметь статических объявлений.</li>
+              <li>
+                Нельзя объявить таким образом интерфейс. А если его объявить без идентификатора <code>static</code>, то
+                он автоматически будет добавлен.
+              </li>
+              <li>Внутри такого класса нельзя объявить перечисления.</li>
+              <li>
+                Если нужно явно получить <code>this</code> внешнего класса - <code>OuterClass.this</code>
+              </li>
+            </ul>
+          </li>
+          <li>
+            Локальный класс (<code>Local inner classes</code>)
+            <ul>
+              <li>Видны только в пределах блока, в котором объявлены.</li>
+              <li>
+                Не могут быть объявлены как <code>private</code>/<code>public</code>/<code>protected</code> или <code>static</code>
+                (по этой причине интерфейсы нельзя объявить локально).
+              </li>
+              <li>Не могут иметь внутри себя статических объявлений (полей, методов, классов).</li>
+              <li>Имеют доступ к полям и методам обрамляющего класса.</li>
+              <li>
+                Можно обращаться к локальным переменным и параметрам метода, если они объявлены с модификатором <code>final</code>.
+              </li>
+            </ul>
+          </li>
+          <li>
+            Анонимные классы (<code>Anonymous inner classes</code>)
+            <ul>
+              <li>Локальный класс без имени.</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </li>
+    <li>
+      <div class="question">Каким образом из вложенного класса получить доступ к полю внешнего класса.</div>
+      <div class="answer">
+        Если вложенный класс не статический и поле не статическое, то можно просто обратиться к этому полю из
+        внутреннего класса, если только у внутреннего класса не существует поля с таким же литералом, в этом случае
+        нужно обраться через ссылку на внешний класс где-то так - <code>OuterClass.this</code>
+      </div>
+    </li>
+    <li>
+      <div class="question">Какие особенности создания вложенных классов: простых и статических.</div>
+      <div class="answer">
+        <code>См 24)</code>
+      </div>
+    </li>
+    <li>
+      <div class="question">Каким образом можно обратиться к локальной переменной метода из анонимного класса,
+        объявленного в теле этого метода? Есть ли каке-нибудь ограничения для такой переменной?</div>
+      <div class="answer">
+        По его литералу. Если переменная является <code>final</code>, то только в этом случае к ней можно обратиться.
+      </div>
+    </li>
+    <li>
+      <div class="question">Какие вы знаете способы запустить некоторое действие в отдельном потоке?</div>
+      <div class="answer">
+        <pre class="brush: java;">
+new Thread(new Runnable() { 
+  public void run() {/* blah */} 
+}).start();  
+        </pre>
+        <pre class="brush: java;">
+new Thread() { 
+  public void run() {/* blah */} 
+}.start();
+        </pre>
+        <br />
+        Наследовать <code>Thread</code> будет верным лишь в случае создания другой имплементации потока. Для выполнения
+        какой-нибудь задачи в отдельном потоке использование наследования будет идеологически неверным.
+      </div>
+    </li>
+    <li>
+      <div class="question">Какие вы знаете способы прекратить выполнение потока?</div>
+      <div class="answer">
+        <ul>
+          <li>
+            <code>Thread.stop();</code> // depreceted
+          </li>
+          <li>
+            При вызове метода <code>interrupt()</code>, флаг прерывания устанавливается в true, после чего в потоке
+            должен быть реализован метод его завершения (выход из метода <code>run()</code>).
+          </li>
+        </ul>
+      </div>
+    </li>
+    <li>
+      <div class="question">Какие ключевые слова Java, связанные с многопоточностью Вы знаете?</div>
+      <div class="answer">
+        <ul>
+          <li>
+            <code>valotile</code> - помечает объект, чтобы он не кэшировался отдельно для каждого потока. Все запросы к
+            переменной будут направляться непосредственно в память.
+          </li>
+          <li>
+            <code>syhcronized</code>.
+          </li>
+        </ul>
+      </div>
+    </li>
+    <li>
+      <div class="question">
+        Для чего используется ключевое слово <code>syhcronized</code>?
+      </div>
+      <div class="answer">Для того, чтобы код в этом блоке выполнялся в один момент времени только одним потоком.
+      </div>
+    </li>
+    <li>
+      <div class="question">
+        Есть некоторый метод, который исполняет операцию <code>i++</code>. Переменная <code>i</code> типа <code>int</code>.
+        Предполагается, что код будет исполнятся в многопоточной среде. Следует ли синхронизировать блок?
+      </div>
+      <div class="answer">Следует. Инкремент/декремент - не атомарные операции.</div>
+    </li>
+    <li>
+      <div class="question">
+        Что служит в качестве <code>mutex</code>, если метод объявлен <code>synchronized</code>?
+      </div>
+      <div class="answer">Экземпляр данного класса.</div>
+    </li>
+    <li>
+      <div class="question">
+        Можно ли вызвать в разных потоках два <code>synchronized</code> метода одного и того же объекта?
+      </div>
+      <div class="answer">
+        Оновременно нельзя. Т.к. методы объявлены как <code>synchronized</code>, то одноременно оперировать с объектом
+        может только один поток, который получил <code>lock объекта</code>. Поэтому: если <code>synchronized</code>
+        метод выполняется в первом потоке, чтобы выполнить какой-либо <code>synchronized</code> метод объекта во втором
+        потоке, второй поток будет вынужден ждать пока станет доступен <code>lock объекта</code>.
+      </div>
+    </li>
+    <li>
+      <div class="question">
+        Что используется в качестве mutex, если метод объявлен <code>static</code> <code>synchronized</code>? Можно ли
+        создавать новые экземпляры класса, пока выполняется <code>static</code> <code>synchronized</code> метод?
+      </div>
+      <div class="answer">Монитор класса, который контролирует доступ ко всему синхронизированному статическому
+        коду. Можно</div>
+    </li>
+    <li>
+      <div class="question">
+        Объясните, что такое <code>deadlock</code>? Приведите пример кода, который демонстрирует <code>deadlock</code>
+      </div>
+      <div class="answer">Ситуация, когда несколько потоков находятся в состоянии бесконечного ожидания в
+        следствии ожидания освобождения ресурсов, которые сами же и занимают. 
+        <pre class="brush: java;">
+class Entity {
+
+  public synchronized void method1(Entity entity) { 
+    entity.method2(this); 
+  } 
+
+  public synchronized void method2(Entity entity) {} 
+
+  public static void main(String[] args) { 
+    Entity en1 = new Entity(); 
+    Entity en2 = new Entity(); 
+    new Thread(new Runnable() { 
+      public void run() { 
+        en1.method1(en2); 
+      } 
+    }).start(); 
+
+    new Thread(new Runnable() { 
+      public void run() { 
+        en2.method1(en1); 
+      }
+    }).start();
+  } 
+
+} 
+        </pre>
+      </div>
+    </li>
+    <li>
+      <div class="question">
+        Для чего используется ключевое слово <code>volatile</code>?
+      </div>
+      <div class="answer">
+        Не используется кэш (имется ввиду область памети в которой <code>JVM</code> может сохранять локальную копию
+        переменной, чтобы уменьшить время обращения к переменной) при обращении к полю.
+      </div>
+    </li>
+    <li>
+      <div class="question">
+        Для чего используется ключевое слово <code>transient</code>?
+      </div>
+      <div class="answer">Для указание того, что при сериализации/десериализации данное поле не нужно
+        сериализовать/десериализовывать.</div>
+    </li>
+    <li>
+      <div class="question">
+        Расскажите о методах <code>wait</code>, <code>notify</code>, <code>notifyAll</code>. Как они применяются, когда,
+        зачем нужны?
+      </div>
+      <div class="answer">
+        <ul>
+          <li>
+            <code>wait()</code> - Приводит поток в ожидание, пока другой поток не вызовит <code>notify()</code> или <code>notifyAll()</code>
+            методы для этого объекта. При этом все эти методы должны быть вызваны в блоке synchronized.
+          </li>
+          <li>
+            <code>notify()</code> - просыпается одни поток, который ждет на "мониторе" данного объекта.
+          </li>
+          <li>
+            <code>notifyAll()</code> - просыпаются все потоки, которые ждут на "мониторе" данного объекта.
+          </li>
+        </ul>
+        Эти методы должны вызываться в <code>блоке synchronized</code>.
+        <br />
+        Применяются для организации работы потоков. Используется один объект, который выполняет управляющую.
+        <br />
+        Именно у него и вызываются эти методы.
+        <br />
+        При вызове одного из этих методов блокировка на объект снимается.
+      </div>
+    </li>
+    <li>
+      <div class="question">
+        Какие особенности использования метода <code>wait</code>? При каких условиях поток может выйти из режима
+        ожидания?
+      </div>
+      <div class="answer">
+        Так же <code>см 39)</code>.
+        <ul>
+          <li>
+            Если задан параметр/параметры, определяющий время и если поток не будет разбужен в течении этого времени при
+            помощи методов <code>notify()</code> или <code>notifyAll()</code>, тогда он будет разбужен по прошествии
+            указанного времени.
+          </li>
+          <li>
+            Если не задан параметр/параметры, определяющие время, то поток будет разбужен только при помощи методов <code>notify()</code>
+            или <code>notifyAll()</code>.
+          </li>
+        </ul>
+      </div>
+    </li>
+    <li>
+      <div class="question">
+        Предположим в методе run возник <code>RuntimeException</code>, который не был пойман. Что случится с потоком?
+        Есть ли способ узнать о том, что <code>Exception</code> произошел (не заключая все тело <code>run</code> в <code>блок
+          try-catch</code>)? Есть ли способ восстановить работу потока после того как это произошло?
+      </div>
+      <div class="answer">Поток будет остановлен. Нет. Нет.</div>
+    </li>
+    <li>
+      <div class="question">Какие стандартные инструменты Java вы бы использовали для реализации пула потоков?</div>
+      <div class="answer">
+        <code>LinkedList</code>, <code>synchronized</code>, <code>wait()</code>, <code>notify()</code>/<code>notifyAll()</code>
+      </div>
+    </li>
+    <li>
+      <div class="question">Какие виды исключений в Java вы знаете, чем они отличаются?</div>
+      <div class="answer">
+        <code>checked</code>/<code>unchecked</code>. Если <code>checked</code> исключение не отлавливается, то это
+        приводит к ошибке на этапе компиляции. <code>Unchecked</code> исключение - то, которое разработчик не должен
+        допустить, т.к. имеет для этого возможность.
+        <br />
+        Если исключение потомок <code>RuntimeException</code> или <code>Error</code>, то это <code>unchecked</code>
+        исключение. Если исключение потомок Exception (и не потомок <code>RuntimeException</code>), то это <code>checked</code>
+        исключение.
+      </div>
+    </li>
+    <li>
+      <div class="question">Назовите несколько классов из вершины иерархии исключений в Java.</div>
+      <div class="answer">
+        <code>Throwable</code>, <code>Error</code>, <code>Exception</code>, <code>RuntimeException</code>.
+      </div>
+    </li>
+    <li>
+      <div class="question">
+        Что такое <code>Error</code>? В каком случае используется <code>Error</code>. Приведите пример <code>Error’а</code>.
+      </div>
+      <div class="answer">
+        Используется для сигнализирования того, что произел сбой внутри <code>JVM</code>. Пример класс <code>ThreadDeath</code>.
+      </div>
+    </li>
+    <li>
+      <div class="question">Какая конструкция используется в Java для обработки исключений?</div>
+      <div class="answer">
+        <code>try - catch - finaly</code>
+      </div>
+    </li>
+    <li>
+      <div class="question">
+        Возможно ли использование <code>блока try-finally</code> (без <code>catch</code>)?
+      </div>
+      <div class="answer">
+        Да, если возникающее исключение не <code>checked</code> или <code>checked</code> исключение будет передано
+        дальше по иерархии, или если оно будет поймано в ещё одном <code>блоке try</code>.
+      </div>
+    </li>
+    <li>
+      <div class="question">
+        Предположим, есть <code>блок try-finally</code>. В <code>блоке try</code> возникло исключение и выполнение
+        переместилось в <code>блок finally</code>. В <code>блоке finally</code> тоже возникло исключение. Какое из двух
+        исключений “выпадет” из <code>блока try-finally</code>? Что случится со вторым исключением?
+      </div>
+      <div class="answer">Выпадает, то есть, не передается по иерархии вызовов первое исключение. И оно просто не
+        попадет в иерархию вызовов.</div>
+    </li>
+    <li>
+      <div class="question">
+        Всегда ли исполняется <code>блок finally</code>?
+      </div>
+      <div class="answer">
+        Только если поток ещё исполняется и <code>JVM</code> ещё работает к этому моменту.
+      </div>
+    </li>
+    <li>
+      <div class="question">
+        Могли бы вы придумать ситуацию, когда <code>блок finally</code> не будет выполнен?
+      </div>
+      <div class="answer">Мог бы. {% codeblock lang:java %} try { System.exit(1); } finaly {
+        System.out.println("42"); } {% endcodeblock %}</div>
+    </li>
+    <li>
+      <div class="question">
+        Предположим, есть метод, который может выбросить <code>IOException</code> и <code>FileNotFoundException</code> в
+        какой последовательности должны идти <code>блоки catch</code>? Сколько <code>блоков catch</code> будет
+        выполнено?
+      </div>
+      <div class="answer">
+        Вначеле <code>FileNotFoundException</code> затем <code>IOException</code>. Один.
+      </div>
+    </li>
+    <li>
+      <div class="question">
+        Предположим вам необходимо создать свой собственный класс <code>Exception</code>. Какими мотивами вы будете
+        руководствоваться при выборе типа исключения: <code>checked</code>/<code>unchecked</code>?
+      </div>
+      <div class="answer">
+        Если исключение возникло из-за того, что клиент нарушал контракт, то это unchecked exeption. Если же исключение
+        возникло по какой-нибудь другой причине, то это <code>checked</code> exeption.
+      </div>
+    </li>
+    <li>
+      <div class="question">
+        Что такое <code>finalize</code>? Зачем он нужен? Что Вы можете рассказать о сборщике мусора и алгоритмах его
+        работы.
+      </div>
+      <div class="answer">
+        Метод <code>finalize()</code> вызывается перед тем, как объект будет удален <code>gc</code>. Существует много
+        различных реализаций <code>gc</code>. Основа работы следующая, <code>gc</code> помечает объекты на которых
+        больше не ссылаются другие объекты для их удаления. Затем на одном из проходов помеченные объекты удаляются.
+        <br />
+        Вызов <code>finalize()</code> не гарантируется, т.к. приложение может быть завершено до того, как будет запущена
+        ещё одна сборка мусора. Да, можно отменить сборку объекта с помощью метода <code>finalize()</code>, присвоив его
+        ссылку какому-то статистическому мето
+      </div>
+    </li>
+    <li>
+      <div class="question">
+        Почему метод <code>clone</code> объявлен как <code>protected</code>? Что необходимо для реализации клонирования?
+      </div>
+      <div class="answer">
+        Это сигнализирует о том, что хоть метод и есть в классе <code>Object</code>, но если им разработчик желает
+        воспользоваться, то его нужно переопределить. Для этого нужно реализовать интерфейс <code>Clonable</code>, чтобы
+        соблюсти контракт.
+      </div>
+    </li>
+  </ol>
+</body>
+</html>

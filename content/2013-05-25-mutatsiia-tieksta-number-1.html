@@ -1,0 +1,105 @@
+<html>
+<head>
+  <title>Мутация текста #1</title>
+  <meta name="tags" content="experiment" />
+  <meta name="date" content="2013-05-25 11:17" />
+  <meta name="modified" content="2013-05-25 11:17" />
+  <meta name="category" content="experiment" />
+  <meta name="authors" content="Alykoff" />
+  <meta name="summary" content="Текст взятый из 'Мастера и Маргариты', у 
+    которого подменяются буквы. В результате возникает чарующая чехорда символов." />
+  <meta name="rawcss" content="
+    .text {
+      text-align: justify;
+      text-indent: 20px;
+      font-family: 'Courier New', Courier, monospace;
+    }
+  " />
+</head>
+<body>
+
+<p class="text">
+	Дверь наверху открыли и закрыли. "Он  вошел!"  -  подумал  Латунский  и
+	двинулся вниз. Сердце его забилось сильно.  Вот  покинутая  швейцарская  под
+	лестницей, в ней никого  нет.  Но  прежде  всего  Латунский  оглянулся,  ища
+	чемодан и другие вещи. Ни чемодана, ни белья на  полу  внизу  не  было.  Вне
+	всяких сомнений, их украли, пока Латунский спускался. Он сам подивился тому,
+	как мало это его расстроило. Латунский шмыгнул  в  швейцарскую  и  засел  за
+	грязным разбитым стеклом.
+</p>
+
+<p class="text">
+	Прошло, минут десять томительного ожидания,  и  Латунскому  показалось,
+	что их гораздо более прошло. За это время только один  человек  пробежал  по
+	лестнице, насвистывая знаменитую песню "гоп со смыком",  и,  судя  по  шуму,
+	скрылся во втором этаже.
+</p>
+
+<script>
+(function() {
+
+  var dicTuple = function(letter, brakeLetter) {
+    this.letter = letter;
+    this.brakeLetter = brakeLetter;
+  };
+
+  var DICTONARY = [
+    new dicTuple('а', 'i'), new dicTuple('б', 'v'), new dicTuple('в', 'l'), new dicTuple('г', 'F'), 
+    new dicTuple('д', 'd'), new dicTuple('е', 'r'), new dicTuple('ё', 'I'), new dicTuple('ж', 'j'), 
+    new dicTuple('з', 'x'), new dicTuple('и', 'o'), new dicTuple('й', 'q'), new dicTuple('к', 'K'), 
+    new dicTuple('л', 'L'), new dicTuple('м', 'w'), new dicTuple('н', 'n'), new dicTuple('о', '0'), 
+    new dicTuple('п', 'R'), new dicTuple('р', 'r'), new dicTuple('с', 's'), new dicTuple('т', 't'), 
+    new dicTuple('у', 'u'), new dicTuple('ф', 'f'), new dicTuple('х', 'h'), new dicTuple('ц', 'C'), 
+    new dicTuple('ч', '2'), new dicTuple('ш', 's'), new dicTuple('щ', '8'), new dicTuple('ъ', '\\'), 
+    new dicTuple('ы', 'b'), new dicTuple('ь', '/'), new dicTuple('э', ','), new dicTuple('ю', 'Y'), 
+    new dicTuple('я', 'D')
+  ];
+  
+  var MUTATE_PROBABILITY = .5;
+
+  var elements = document.getElementsByClassName('text');
+  
+  // for cross-browsing
+  var NODE_TEXT_NAME = ('innerText' in document.getElementsByTagName('html')[0]) ? "innerText" : "textContent"; 
+  
+  var getCurrentTexts = function() {
+    var texts = [];
+    for (var i = 0, elementsLengh = elements.length; i < elementsLengh; i++) {
+      var textEl = elements[i];
+      var text = textEl[NODE_TEXT_NAME];
+      texts.push(text);
+    }
+    return texts;
+  };
+  
+  var paragrafsText = getCurrentTexts();
+  
+  var getMutateSign = function(sign) {
+		if (Math.random() > MUTATE_PROBABILITY || (typeof sign !== 'string')) {
+	    return sign;
+    }
+    sign = sign.toLowerCase();
+    for (var i = 0, lengthDictonary = DICTONARY.length; i < lengthDictonary; i++) {
+      if (DICTONARY[i].letter === sign) {
+        return DICTONARY[i].brakeLetter;
+      }
+    }
+    return sign;
+  };
+
+  var mutation = function() {
+    for (var i = 0, lenghtTextEL = elements.length; i < lenghtTextEL; i++) {
+      var text = paragrafsText[i].split('');
+      var mutateText = [];
+      for (var j = 0, lenghtText = text.length; j < lenghtText; j++) {
+        mutateText[j] = getMutateSign(text[j])
+      }
+      elements[i][NODE_TEXT_NAME] = mutateText.join('');
+    }
+  };
+
+  setInterval(mutation, 200);
+}) ();
+</script>
+</body>
+</html>

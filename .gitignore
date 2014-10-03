@@ -1,0 +1,12 @@
+/cache
+/Include
+/Lib
+/output
+/Scripts
+/tmp
+develop_server.sh
+fabfile.py
+Makefile
+pelican.pid
+pelicanconf.pyc
+srv.pid

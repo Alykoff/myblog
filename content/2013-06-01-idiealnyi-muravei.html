@@ -1,0 +1,256 @@
+<html>
+<head>
+  <title>Идеальный муравей</title>
+  <meta name="tags" content="java" />
+  <meta name="date" content="2013-06-01 19:43" />
+  <meta name="modified" content="2013-06-01 19:43" />
+  <meta name="category" content="finite_state_automation" />
+  <meta name="authors" content="Alykoff" />
+  <meta name="summary" content="Три муравья Ленгтона движущихся в конечной коробке. 
+    Муравей Ленгтона - это двумерная машина Тьюринга, передвижение которой по плоскости подчинено простым правилам." />
+  <meta name="js" content="/theme/js/processing-1.4.8.min.js">
+</head>
+<body>
+
+<p>
+	Муравьи. Какие же они бывают разные! И черные, и красные, и черные маленькие, и черные большие и...Ох, сколько же вас! 
+  Давным-давно мне очень нравились муравьи. 
+  С ними было неплохо, можно было наблюдать их локальные войны. 
+  Отчего-то (в какой-то степени это и ясно) муравьи одного цвета не любят муравьев другого цвета. 
+  Но в данном случае у нас муравьи все одного цвета - черно-белого. Да-да, черно-белого. 
+  (На самом деле это <a href="http://ru.wikipedia.org/wiki/%D0%9C%D1%83%D1%80%D0%B0%D0%B2%D0%B5%D0%B9_%D0%9B%D1%8D%D0%BD%D0%B3%D1%82%D0%BE%D0%BD%D0%B0">муравьи Лэнгтона</a>). 
+  В конкретном случае муравьи работают только с черным и белым цветом, оттого я их так и назвал. А что ещё они умеют? А вот что:
+</p>
+
+<ul style="margin-left:30px;">
+  <li>
+    Жить на клеточном поле занимая при этом одну клетку.
+  </li>
+  <li>
+    При нахождении на черной клетке — поворачивать на 90 градусов влево, 
+    изменяя при этом цвет клетки на противоположный и делая шаг вперед на следующую клетку.
+  </li>
+  <li>
+    При нахождении на белой клетке — поворачивать на 90° вправо, изменяя цвет клетки на 
+    противоположный и делая шаг вперед на следующую клетку.
+  </li>
+</ul>
+
+<p>
+	Казалось бы что муравей подчиняесь вполня четким правилам ведет себя хаотично. 
+  Но в итоге это оказывается не так. 
+  Через некоторое время, если муравью никто не мешал он начинает строить дорожку с 
+  цикличностью в 104 шага. И так до бесконечности.
+</p>
+
+<p>
+	Черное и белое. Где правда, а где вымысел? Где фон, а где узор? 
+  Забавно представить все с другой стороны. Например, 
+  как-будто муравей наоборот препятствует изменению цветов поля, 
+  а его отсутствие не уберегает поле от изменения цвета.
+</p>
+
+
+<p>
+	А вот и история о трех муравьях:
+</p>
+
+<canvas style="width: 400px; height: 400px;" id="mycanvas" class="canvas"></canvas>
+
+<p>
+	И для увеличение объема написанно текста - код на processing:
+</p>
+
+<pre class="brush: java">
+final int WIDHT = 200;
+final int HEIGTH = 200;
+final color BLACK = color(0, 0, 0);
+final color WHITE = color(255, 255, 255);
+ 
+int frameRateValue = 300;
+int centerX = WIDHT / 2;
+int centerY = HEIGTH / 2;
+int direction = 0;
+Ant ant1, ant2, ant3;
+ 
+ 
+void setup() {
+  frameRate(frameRateValue);
+  size(WIDHT, HEIGTH);
+  background(BLACK);
+  ant1 = new Ant(centerX, centerY, 0);
+  ant2 = new Ant(50, 50, 0);
+  ant3 = new Ant(50, 150, 3);
+}
+ 
+void draw() {
+   ant1.step();
+   ant2.step();
+   ant3.step();
+}
+ 
+class Direction {
+   static final int UP_DIRECTION = 0;
+   static final int RIGTH_DIRECTION = 1;
+   static final int DOWN_DIRECTION = 2;
+   static final int LEFT_DIRECTION = 3;
+   static final int MAX_DIRECTION_STATE = LEFT_DIRECTION;
+   static final int MIN_DIRECTION_STATE = UP_DIRECTION;
+   static final int LEFT_STEP_ROTATE = -1;
+   static final int RIGTH_STEP_ROTATE = 1;
+}
+ 
+class Ant {
+  private int x, y, direction;
+ 
+  Ant(int x, int y) {
+    this.x = x;
+    this.y = y;
+    this.direction = 0;
+  }
+ 
+  Ant(int x, int y, int direction) {
+    this.x = x;
+    this.y = y;
+    this.direction = direction;      
+  }
+ 
+  void step() {
+    color currentColor = get(x, y);
+    if (currentColor == BLACK) {
+      set(x, y, WHITE);
+      turn(Direction.LEFT_STEP_ROTATE);
+    } else if (currentColor == WHITE) {
+      set(x, y, BLACK);
+      turn(Direction.RIGTH_STEP_ROTATE);
+    }
+    move();
+  }
+ 
+  private void move() {
+    if (x &lt; 0) x = WIDHT;
+    else if (x > WIDHT) x = 0;
+    if (y &lt; 0) y = HEIGTH;
+    else if (y > HEIGTH) y = 0;
+    switch(direction) {
+      case Direction.UP_DIRECTION:
+        y = y - 1;
+        break;
+      case Direction.RIGTH_DIRECTION:
+        x = x + 1;
+        break;
+      case Direction.DOWN_DIRECTION:
+        y = y + 1;
+        break;
+      case Direction.LEFT_DIRECTION:
+        x = x - 1;
+        break;
+    }
+  }
+ 
+  private void turn(int step) {
+    direction = direction + step;
+    if (direction > Direction.MAX_DIRECTION_STATE) 
+    	direction = Direction.MIN_DIRECTION_STATE;
+    if (direction &lt; Direction.MIN_DIRECTION_STATE) 
+    	direction = Direction.MAX_DIRECTION_STATE;
+  }  
+}
+</pre>
+
+<script type="text/processing" data-processing-target="mycanvas">
+  final int WIDHT = 200;
+  final int HEIGTH = 200;
+  final color BLACK = color(0, 0, 0);
+  final color WHITE = color(255, 255, 255);
+   
+  int frameRateValue = 300;
+  int centerX = WIDHT / 2;
+  int centerY = HEIGTH / 2;
+  int direction = 0;
+  Ant ant1, ant2, ant3;
+   
+   
+  void setup() {
+    frameRate(frameRateValue);
+    size(WIDHT, HEIGTH);
+    background(BLACK);
+    ant1 = new Ant(centerX, centerY, 0);
+    ant2 = new Ant(50, 50, 0);
+    ant3 = new Ant(50, 150, 3);
+  }
+   
+  void draw() {
+     ant1.step();
+     ant2.step();
+     ant3.step();
+  }
+   
+  class Direction {
+     static final int UP_DIRECTION = 0;
+     static final int RIGTH_DIRECTION = 1;
+     static final int DOWN_DIRECTION = 2;
+     static final int LEFT_DIRECTION = 3;
+     static final int MAX_DIRECTION_STATE = LEFT_DIRECTION;
+     static final int MIN_DIRECTION_STATE = UP_DIRECTION;
+     static final int LEFT_STEP_ROTATE = -1;
+     static final int RIGTH_STEP_ROTATE = 1;
+  }
+   
+  class Ant {
+    private int x, y, direction;
+   
+    Ant(int x, int y) {
+      this.x = x;
+      this.y = y;
+      this.direction = 0;
+    }
+   
+    Ant(int x, int y, int direction) {
+      this.x = x;
+      this.y = y;
+      this.direction = direction;      
+    }
+   
+    void step() {
+      color currentColor = get(x, y);
+      if (currentColor == BLACK) {
+        set(x, y, WHITE);
+        turn(Direction.LEFT_STEP_ROTATE);
+      } else if (currentColor == WHITE) {
+        set(x, y, BLACK);
+        turn(Direction.RIGTH_STEP_ROTATE);
+      }
+      move();
+    }
+   
+    private void move() {
+      if (x < 0) x = WIDHT;
+      else if (x > WIDHT) x = 0;
+      if (y < 0) y = HEIGTH;
+      else if (y > HEIGTH) y = 0;
+      switch(direction) {
+        case Direction.UP_DIRECTION:
+          y = y - 1;
+          break;
+        case Direction.RIGTH_DIRECTION:
+          x = x + 1;
+          break;
+        case Direction.DOWN_DIRECTION:
+          y = y + 1;
+          break;
+        case Direction.LEFT_DIRECTION:
+          x = x - 1;
+          break;
+      }
+    }
+   
+    private void turn(int step) {
+      direction = direction + step;
+      if (direction > Direction.MAX_DIRECTION_STATE) direction = Direction.MIN_DIRECTION_STATE;
+      if (direction < Direction.MIN_DIRECTION_STATE) direction = Direction.MAX_DIRECTION_STATE;
+    }
+  }
+</script>
+
+</body>

@@ -1,0 +1,173 @@
+<html>
+<head>
+  <title>Супер волны [processing]</title>
+  <meta name="tags" content="experiment" />
+  <meta name="date" content="2013-05-10 21:45" />
+  <meta name="modified" content="2013-05-10 21:45" />
+  <meta name="category" content="experiment" />
+  <meta name="summary" content="Психоделическое изображение полученное при помощи processing.js" />
+  <meta name="js" content="/theme/js/processing-1.4.8.min.js">
+</head>
+<body>
+<p>
+    "Супер волны" по мотивам Jorg Reuter's 
+    <a href="http://stachelig.de/">SinusPlasma sketch</a>
+</p>
+
+<p>
+  Поначалу я начал изучать вышеназванную SinusPlasma, причем изучаемая мною реализация была написана на Scala. 
+  Напомню, processing реализован для <abbr title="Java Virtual Machine">JVM</abbr>, 
+  а так же в виде javascript-библиотеки, которая транслирует написанный код processing'а в javascript.
+</p>
+
+<p>
+  Я уже ипомянул, что использовал scala в своих экспериментах, 
+  в силу того, что мне нравится этот язык (меньше писать по сравнению с Java).
+  После того как я получил результат, который был приятен моему глазу 
+  я решил портировать его на processing.js (и это было не сложно!) и вот что получилось:
+</p>
+
+<canvas style="width: auto; height: 60px;" id="mycanvas" class="canvas"></canvas>
+
+<p>
+  А вот и код:
+</p>
+
+<pre class="brush: java;">
+int SCREENWIDTH = 220;
+int SCREENHEIGHT = 120;
+// magnifair
+int GRADIENTLEN = 150;
+// changes speed
+int SPEEDUP = 1;
+// magnitude moving blocks (color diversity)
+int SWINGLEN = GRADIENTLEN;
+// this param affect to color sheme (then his more then colors more)
+int SWINGMAX = GRADIENTLEN * 3 - 1; 
+int[] colorGrad = new int[GRADIENTLEN];
+int minX = 0;
+int maxX = 0;
+int minY = 0;
+int maxY = 0;
+
+void setup () {
+  background(200);
+  size( SCREENWIDTH, SCREENHEIGHT);   
+  makeGradient();
+  setMaxMinX();
+  setMaxMinY();
+}
+
+void draw () {
+  loadPixels();
+  int i = 0;
+  int t = frameCount * SPEEDUP;
+  for (int y = minY; y &lt; maxY; y++) {
+    for (int x = minX; x &lt; maxX; x++) {
+      set(x, y, gradient(int(x*x/4) + int(y*y/4) + t));
+      i = i + 1;
+    }
+  }
+  updatePixels();
+}
+
+void makeGradient() {
+  int arrlen = GRADIENTLEN;
+  int rf = 4;
+  int gf = 2;
+  int bf = 1;
+  int rd = arrlen;
+  int gd = arrlen / gf;
+  int bd = arrlen / bf / 2;
+  for (int i = 0; i &lt; arrlen; i++) {
+    int r = cos256(arrlen / rf, i + rd );
+    int g = cos256(arrlen / gf, i + gd) / 2;
+    int b = cos256(arrlen / bf, i + bd) / 2;
+    colorGrad[i] = color(r, g, b);
+  }
+}
+
+int cos256(int amplitude, int x) {
+  return int(cos(x * TWO_PI / amplitude) * 127) + 127;
+}
+    
+int gradient(int i) {
+  return colorGrad[i % GRADIENTLEN];
+}
+
+void setMaxMinX() {
+  minX = 0;
+  maxX = 220;
+}
+
+void setMaxMinY() {
+  mixY = 0;
+  maxY = 120;
+}
+</pre>
+
+<script type="text/processing" data-processing-target="mycanvas">
+  int SCREENWIDTH = 220;
+  int SCREENHEIGHT = 120;
+  int GRADIENTLEN = 150;// magnifair
+  int SPEEDUP = 1; // changes speed  
+  int SWINGLEN = GRADIENTLEN;  // magnitude moving blocks (color diversity)
+  int SWINGMAX = GRADIENTLEN * 3 - 1; // this param affect to color sheme (then his more then colors more)
+  int[] colorGrad = new int[GRADIENTLEN];
+  int minX = 0;
+  int maxX = 0;
+  int minY = 0;
+  int maxY = 0;
+  void setup () {
+    background(200);
+    size( SCREENWIDTH, SCREENHEIGHT);   
+    makeGradient();
+    setMaxMinX();
+    setMaxMinY();
+  }
+  void draw () {
+    loadPixels();
+    int i = 0;
+    int t = frameCount * SPEEDUP;
+    for (int y = minY; y < maxY; y++) {
+        for (int x = minX; x < maxX; x++) {
+          set(x, y, gradient(int(x*x/4) + int(y*y/4) + t));
+          i = i + 1;
+        }
+    }
+    updatePixels();
+  }
+  void makeGradient() {
+    int arrlen = GRADIENTLEN;
+    int rf = 4;
+    int gf = 2;
+    int bf = 1;
+    int rd = arrlen;
+    int gd = arrlen / gf;
+    int bd = arrlen / bf / 2;
+    for (int i = 0; i < arrlen; i++) {
+      int r = cos256(arrlen / rf, i + rd );
+      int g = cos256(arrlen / gf, i + gd) / 2;
+      int b = cos256(arrlen / bf, i + bd) / 2;
+      colorGrad[i] = color(r, g, b);
+    }
+  }
+  int cos256(int amplitude, int x) {
+    return int(cos(x * TWO_PI / amplitude) * 127) + 127;
+  }
+  int gradient(int i) {
+    return colorGrad[i % GRADIENTLEN];
+  }
+
+  void setMaxMinX() {
+    minX = 0;
+    maxX = 220;
+  }
+  void setMaxMinY() {
+    mixY = 0;
+    maxY = 120;
+  }
+</script>
+
+</body>
+</html>
